@@ -44,4 +44,8 @@
   --font-size-md: 12px;
   --font-size-lg: 13px;
   --font-size-xl: 15px;
+
+  /* Additional color tokens */
+  --color-done-bg-hover: #c8e6c9;
+  --color-white: #ffffff;
 }

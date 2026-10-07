@@ -56,7 +56,7 @@
 }
 
 .exec-btn .material-icons { font-size: 13px; }
-.exec-btn.ai { background: var(--color-sidebar-bg); color: #fff; border-color: var(--color-sidebar-bg); }
+.exec-btn.ai { background: var(--color-sidebar-bg); color: var(--color-white); border-color: var(--color-sidebar-bg); }
 .exec-btn:hover:not(.ai) { background: var(--color-center-bg); }
 
 .draft-box {
@@ -98,7 +98,7 @@
 
 .arch-btn .material-icons { font-size: 13px; }
 .arch-btn.confirm { background: var(--color-done-bg); color: var(--color-done); border-color: var(--color-done-border); }
-.arch-btn.confirm:hover { background: #c8e6c9; }
+.arch-btn.confirm:hover { background: var(--color-done-bg-hover); }
 
 .arch-path {
   font-size: var(--font-size-xs);
