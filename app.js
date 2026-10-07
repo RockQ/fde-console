@@ -9,6 +9,7 @@ const App = (() => {
       document.getElementById('exec-panel').innerHTML = '';
     } else {
       PhaseView.render();
+      ExecPanel.renderEmpty();
     }
   }
   return { render };
