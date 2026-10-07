@@ -1,12 +1,14 @@
+// Module-level HTML escaping utility
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 const PhaseView = (() => {
-  function escHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
 
   function daysFromEntry(project) {
     const entry = new Date(project.entryDate);
@@ -88,11 +90,61 @@ const PhaseView = (() => {
   return { render, renderTimeline };
 })();
 
-// TaskList stub — replaced in Task 6
 const TaskList = (() => {
   function render(project) {
+    const activeStage = project.stages.find(s => s.id === project.currentStageId);
+    if (!activeStage) return;
+
     const container = document.getElementById('task-list-container');
-    if (container) container.innerHTML = '<div style="padding:16px;color:#9e9e9e;font-size:12px;">工作清单加载中…</div>';
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="task-panel">
+        <div class="task-panel-title">
+          <span class="material-icons">assignment</span>
+          ${escHtml(activeStage.name)} — 工作清单
+        </div>
+        ${(activeStage.tasks || []).map(task => `
+          <div class="task-item task-${task.status}" data-task="${escHtml(task.id)}">
+            <div class="task-info">
+              <div class="task-title">${escHtml(task.title)}</div>
+              <div class="task-desc">${escHtml(task.description)}</div>
+            </div>
+            <div class="task-action">
+              ${task.status === 'archived'
+                ? `<span class="material-icons">check_circle</span>已归档`
+                : task.status === 'active'
+                  ? `<button class="run-btn" data-task="${escHtml(task.id)}">
+                      <span class="material-icons">play_arrow</span>开始
+                     </button>`
+                  : `<span class="material-icons">lock</span>`
+              }
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Active task row click opens exec panel
+    container.querySelectorAll('.task-item.task-active').forEach(el => {
+      el.addEventListener('click', () => {
+        const task = activeStage.tasks.find(t => t.id === el.dataset.task);
+        if (typeof ExecPanel !== 'undefined') {
+          ExecPanel.open(project, activeStage, task);
+        }
+      });
+    });
+
+    container.querySelectorAll('.run-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const task = activeStage.tasks.find(t => t.id === btn.dataset.task);
+        if (typeof ExecPanel !== 'undefined') {
+          ExecPanel.open(project, activeStage, task);
+        }
+      });
+    });
   }
+
   return { render };
 })();
