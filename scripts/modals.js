@@ -41,7 +41,7 @@ const NewProjectModal = (() => {
     `;
 
     document.getElementById('modal-cancel').addEventListener('click', close);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); }, { once: true });
 
     document.getElementById('modal-confirm').addEventListener('click', () => {
       const nameEl = document.getElementById('modal-name');
@@ -175,7 +175,7 @@ const MilestoneModal = (() => {
     `;
 
     document.getElementById('ms-cancel').addEventListener('click', close);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); }, { once: true });
 
     document.getElementById('ms-confirm').addEventListener('click', () => {
       const label = document.getElementById('ms-label').value.trim();
