@@ -81,6 +81,7 @@ const Store = (() => {
   function addMilestone(projectId, milestone) {
     const project = state.projects.find(p => p.id === projectId);
     if (!project) return false;
+    if (!project.milestones) project.milestones = [];
     project.milestones.push(milestone);
     save();
     return true;

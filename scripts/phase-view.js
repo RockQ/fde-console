@@ -1,4 +1,13 @@
 const PhaseView = (() => {
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function daysFromEntry(project) {
     const entry = new Date(project.entryDate);
     const today = new Date();
@@ -16,14 +25,14 @@ const PhaseView = (() => {
           ${project.stages.map(stage => {
             const ms = milestonesForStage(stage.id);
             const msHtml = ms.map(m =>
-              `<div class="milestone-marker">${m.label}</div>`
+              `<div class="milestone-marker">${escHtml(m.label)}</div>`
             ).join('');
             return `
-              <div class="phase-card phase-${stage.status}" data-stage="${stage.id}">
+              <div class="phase-card phase-${stage.status}" data-stage="${escHtml(stage.id)}">
                 <div class="phase-tag">${stage.status === 'active' ? '当前' : ''}</div>
-                <div class="phase-name">${stage.name}</div>
+                <div class="phase-name">${escHtml(stage.name)}</div>
                 ${stage.status === 'active'
-                  ? `<div class="phase-progress">${stage.tasks.filter(t=>t.status==='archived').length} / ${stage.tasks.length} 项完成</div>`
+                  ? `<div class="phase-progress">${(stage.tasks || []).filter(t=>t.status==='archived').length} / ${(stage.tasks || []).length} 项完成</div>`
                   : `<span class="material-icons">${stage.status === 'done' ? 'check_circle' : 'lock'}</span>`
                 }
                 ${msHtml}
@@ -48,8 +57,8 @@ const PhaseView = (() => {
     panel.innerHTML = `
       <div class="proj-header">
         <div>
-          <div class="proj-title">${project.name}</div>
-          <div class="proj-meta">${project.industry} &nbsp;·&nbsp; 进场 ${project.entryDate}</div>
+          <div class="proj-title">${escHtml(project.name)}</div>
+          <div class="proj-meta">${escHtml(project.industry)} &nbsp;·&nbsp; 进场 ${escHtml(project.entryDate)}</div>
         </div>
         <div class="header-actions">
           <button class="action-btn primary" id="kb-btn">
