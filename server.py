@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""FDE Workbench local server — serves static files + proxies Anthropic API."""
+"""FDE Workbench local server — serves static files + proxies Ark (DeepSeek 4.1) API."""
 import json
 import os
 import sys
 
-from anthropic import Anthropic
+from openai import OpenAI
 from flask import Flask, Response, jsonify, request, send_from_directory
+
+ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
 
 app = Flask(__name__, static_folder=".", static_url_path="")
 
@@ -204,17 +206,21 @@ SKILL_PROMPTS = {
 
 
 def get_client():
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    api_key = os.environ.get("ARK_API_KEY", "")
     if not api_key:
         return None
-    return Anthropic(api_key=api_key)
+    return OpenAI(api_key=api_key, base_url=ARK_BASE_URL)
+
+
+def get_model():
+    return os.environ.get("ARK_MODEL", "")
 
 
 @app.route("/api/skill", methods=["POST"])
 def call_skill():
     client = get_client()
     if not client:
-        return jsonify({"error": "ANTHROPIC_API_KEY not set"}), 500
+        return jsonify({"error": "ARK_API_KEY not set"}), 500
 
     data = request.get_json(silent=True) or {}
     skill_id = data.get("skill", "")
@@ -235,14 +241,19 @@ def call_skill():
 
     def generate():
         try:
-            with client.messages.stream(
-                model="claude-sonnet-4-6",
+            stream = client.chat.completions.create(
+                model=get_model(),
                 max_tokens=1024,
-                system=system,
-                messages=[{"role": "user", "content": user_msg}],
-            ) as stream:
-                for text in stream.text_stream:
-                    yield f"data: {json.dumps({'text': text})}\n\n"
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user_msg},
+                ],
+                stream=True,
+            )
+            for chunk in stream:
+                delta = chunk.choices[0].delta.content
+                if delta:
+                    yield f"data: {json.dumps({'text': delta})}\n\n"
             yield "data: [DONE]\n\n"
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
@@ -259,9 +270,12 @@ def serve_static(path):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("错误：请先设置 ANTHROPIC_API_KEY 环境变量", file=sys.stderr)
-        print("  export ANTHROPIC_API_KEY=sk-ant-...", file=sys.stderr)
+    missing = [v for v in ("ARK_API_KEY", "ARK_MODEL") if not os.environ.get(v)]
+    if missing:
+        for v in missing:
+            print(f"错误：请先设置 {v} 环境变量", file=sys.stderr)
+        print("  export ARK_API_KEY=<your-key>", file=sys.stderr)
+        print("  export ARK_MODEL=<endpoint-id>", file=sys.stderr)
         sys.exit(1)
     print(f"FDE 工作台运行在 http://localhost:{port}")
     app.run(host="127.0.0.1", port=port, debug=False, threaded=True)
