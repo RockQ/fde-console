@@ -43,30 +43,6 @@ const ExecPanel = (() => {
     return parts.join('\n');
   }
 
-  function _showKeyPrompt(errorMsg) {
-    const panel = document.getElementById('exec-panel');
-    if (!panel) return;
-    const current = FDEApi.getKey();
-    panel.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:12px;padding:4px 0">
-        <div style="font-weight:700;font-size:13px;color:var(--color-text-primary)">输入 Anthropic API Key</div>
-        ${errorMsg ? `<div style="font-size:11px;color:var(--color-fail)">${escHtml(errorMsg)}</div>` : ''}
-        <div style="font-size:11px;color:var(--color-text-secondary)">Key 仅保存在本地，不会上传。</div>
-        <input id="api-key-input" type="password" value="${escHtml(current)}" placeholder="sk-ant-..."
-          style="width:100%;padding:8px 10px;border:1px solid var(--color-border);border-radius:var(--radius-sm);font-size:12px;font-family:var(--font-main)">
-        <div style="display:flex;gap:8px">
-          <button id="api-key-save" style="flex:1;padding:7px;font-size:12px;background:var(--color-sidebar-bg);color:var(--color-white);border:none;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-main)">保存</button>
-          <button id="api-key-cancel" style="flex:1;padding:7px;font-size:12px;background:var(--color-panel-bg);color:var(--color-text-primary);border:1px solid var(--color-border);border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-main)">取消</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('api-key-save').addEventListener('click', () => {
-      const val = document.getElementById('api-key-input').value.trim();
-      if (val) { FDEApi.saveKey(val); renderPanel(); }
-    });
-    document.getElementById('api-key-cancel').addEventListener('click', () => renderPanel());
-  }
-
   function renderEmpty() {
     const panel = document.getElementById('exec-panel');
     if (!panel) return;
@@ -129,19 +105,13 @@ const ExecPanel = (() => {
     });
 
     document.getElementById('exec-ai-btn').addEventListener('click', () => {
-      if (!FDEApi.hasKey()) {
-        _showKeyPrompt();
-        return;
-      }
       const draft = document.getElementById('draft-box');
       if (!draft) return;
       draft.innerHTML = '<span style="color:var(--color-text-muted)">AI 生成中<span id="ai-dots">...</span></span>';
 
-      // Animate dots while streaming
       let dots = 0;
-      const dotsEl = () => document.getElementById('ai-dots');
       const dotTimer = setInterval(() => {
-        const el = dotsEl();
+        const el = document.getElementById('ai-dots');
         if (el) { dots = (dots + 1) % 4; el.textContent = '.'.repeat(dots + 1); }
       }, 400);
 
@@ -162,14 +132,10 @@ const ExecPanel = (() => {
           _draftContent = accumulated;
           renderPanel();
         },
-        (errType) => {
+        (errMsg) => {
           clearInterval(dotTimer);
-          if (errType === 'NO_KEY' || errType === 'INVALID_KEY') {
-            _showKeyPrompt(errType === 'INVALID_KEY' ? 'API Key 无效，请重新输入' : '');
-          } else {
-            const d = document.getElementById('draft-box');
-            if (d) d.innerHTML = `<span style="color:var(--color-fail)">调用失败：${escHtml(errType)}</span>`;
-          }
+          const d = document.getElementById('draft-box');
+          if (d) d.innerHTML = `<span style="color:var(--color-fail)">调用失败：${escHtml(errMsg)}</span>`;
         }
       );
     });
