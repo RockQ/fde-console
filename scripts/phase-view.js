@@ -105,7 +105,7 @@ const TaskList = (() => {
           ${escHtml(activeStage.name)} — 工作清单
         </div>
         ${(activeStage.tasks || []).map(task => `
-          <div class="task-item task-${task.status}" data-task="${escHtml(task.id)}">
+          <div class="task-item task-${task.status}" data-task="${task.id}">
             <div class="task-info">
               <div class="task-title">${escHtml(task.title)}</div>
               <div class="task-desc">${escHtml(task.description)}</div>
@@ -114,7 +114,7 @@ const TaskList = (() => {
               ${task.status === 'archived'
                 ? `<span class="material-icons">check_circle</span>已归档`
                 : task.status === 'active'
-                  ? `<button class="run-btn" data-task="${escHtml(task.id)}">
+                  ? `<button class="run-btn" data-task="${task.id}">
                       <span class="material-icons">play_arrow</span>开始
                      </button>`
                   : `<span class="material-icons">lock</span>`

@@ -140,7 +140,7 @@
 .task-panel-title {
   font-weight: 700;
   font-size: var(--font-size-md);
-  color: #333;
+  color: var(--color-text-primary);
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -175,7 +175,7 @@
 
 .task-action .material-icons { font-size: 14px; }
 
-.task-archived { background: #f1f8f1; }
+.task-archived { background: var(--color-done-bg); }
 .task-archived .task-action { color: var(--color-done); }
 
 .task-active {
@@ -184,8 +184,8 @@
   box-shadow: 0 1px 4px rgba(74,158,255,0.12);
 }
 
-.task-locked { background: #fafafa; color: #bdbdbd; }
-.task-locked .task-desc { color: #d0d0d0; }
+.task-locked { background: var(--color-locked-bg); color: var(--color-locked); }
+.task-locked .task-desc { color: var(--color-locked); }
 
 .run-btn {
   display: flex;
