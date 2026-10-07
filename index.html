@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FDE 工作台</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/variables.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/project-list.css">
+  <link rel="stylesheet" href="styles/phase-view.css">
+  <link rel="stylesheet" href="styles/exec-panel.css">
+  <link rel="stylesheet" href="styles/knowledge-base.css">
+</head>
+<body>
+  <div id="app">
+    <div class="topbar">
+      <span class="material-icons topbar-icon">work</span>
+      <span class="topbar-title">FDE 工作台</span>
+      <span id="topbar-context" class="topbar-context"></span>
+    </div>
+    <div class="main-layout">
+      <aside id="project-list-panel" class="panel-left"></aside>
+      <main id="main-panel" class="panel-center"></main>
+      <section id="exec-panel" class="panel-right"></section>
+    </div>
+  </div>
+  <div id="modal-overlay" class="modal-overlay hidden"></div>
+  <script src="scripts/store.js"></script>
+  <script src="scripts/demo-data.js"></script>
+  <script src="scripts/project-list.js"></script>
+  <script src="scripts/phase-view.js"></script>
+  <script src="scripts/exec-panel.js"></script>
+  <script src="scripts/knowledge-base.js"></script>
+  <script src="scripts/modals.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
