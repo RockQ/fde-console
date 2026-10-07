@@ -180,9 +180,11 @@ const KnowledgeBase = (() => {
       exportBtn.addEventListener('click', () => {
         const blob = new Blob([_selectedTask.output || ''], { type: 'text/markdown' });
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
+        a.href = url;
         a.download = `${_selectedTask.title}.md`;
         a.click();
+        URL.revokeObjectURL(url);
       });
     }
   }

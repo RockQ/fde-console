@@ -48,4 +48,12 @@
   /* Additional color tokens */
   --color-done-bg-hover: #c8e6c9;
   --color-white: #ffffff;
+
+  /* KB and tag colors */
+  --color-kb-active-bg: #e8f0fe;
+  --color-kb-active-text: #1a73e8;
+  --color-kb-hover-bg: #eef2f7;
+  --color-accent-bg: #f0f6ff;
+  --color-tag-ai-bg: #f3e5f5;
+  --color-tag-ai-text: #7b1fa2;
 }
