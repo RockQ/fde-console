@@ -40,18 +40,19 @@ const Store = (() => {
 
   function updateProject(id, updates) {
     const idx = state.projects.findIndex(p => p.id === id);
-    if (idx === -1) return;
+    if (idx === -1) return false;
     state.projects[idx] = { ...state.projects[idx], ...updates };
     save();
+    return true;
   }
 
   function updateTask(projectId, stageId, taskId, updates) {
     const project = state.projects.find(p => p.id === projectId);
-    if (!project) return;
+    if (!project) return false;
     const stage = project.stages.find(s => s.id === stageId);
-    if (!stage) return;
+    if (!stage) return false;
     const task = stage.tasks.find(t => t.id === taskId);
-    if (!task) return;
+    if (!task) return false;
     Object.assign(task, updates);
     // After archiving a task, unlock the next one
     if (updates.status === 'archived') {
@@ -65,20 +66,24 @@ const Store = (() => {
         const nextStage = project.stages[stageIdx + 1];
         if (nextStage && nextStage.status === 'locked') {
           nextStage.status = 'active';
-          nextStage.tasks[0].status = 'active';
+          if (nextStage.tasks && nextStage.tasks.length > 0) {
+            nextStage.tasks[0].status = 'active';
+          }
           project.currentStageId = nextStage.id;
         }
         stage.status = 'done';
       }
     }
     save();
+    return true;
   }
 
   function addMilestone(projectId, milestone) {
     const project = state.projects.find(p => p.id === projectId);
-    if (!project) return;
+    if (!project) return false;
     project.milestones.push(milestone);
     save();
+    return true;
   }
 
   function isEmpty() {
