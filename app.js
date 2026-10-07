@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-  Store.load();
-  console.log('Store loaded. isEmpty:', Store.isEmpty());
-  console.log('State:', Store.getState());
+  loadDemoDataIfEmpty();
+  const state = Store.getState();
+  console.log('Projects:', state.projects.length);
+  console.log('Demo project:', state.projects[0]?.name);
 });
